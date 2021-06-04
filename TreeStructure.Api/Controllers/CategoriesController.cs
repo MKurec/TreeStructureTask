@@ -50,12 +50,18 @@ namespace TreeStructure.Api.Controllers
             await _categoryService.CreateAsync(Id, command.name);
             return Created($"/category/{Id}", null);
         }
-        [HttpPut("{parentCategoryId}")]
-        public async Task<IActionResult> Put(Guid parentCategoryId, [FromBody] AddCategory command)
+        [HttpPost("{parentCategoryId}")]
+        public async Task<IActionResult> Post(Guid parentCategoryId, [FromBody] AddCategory command)
         {
             var Id = Guid.NewGuid();
             await _categoryService.AddSubCategory(parentCategoryId, Id, command.name);
             return Created($"/category/{Id}", null);
+        }
+        [HttpPut("{categoryId}")]
+        public async Task<IActionResult> Put(Guid categoryId, [FromBody] AddCategory command)
+        {
+            await _categoryService.UpdateAsync(categoryId, command.name);
+            return Created($"/category/{categoryId}", null);
         }
         [HttpDelete("{categoryId}")]
         public async Task<IActionResult> Delete(Guid categoryId)

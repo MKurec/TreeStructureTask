@@ -16,5 +16,7 @@ namespace TreeStructure.Infrastructure.Services
         Task DeleteAsync(Guid id);
         Task AddSubCategory(Guid categoryId, Guid subCategoryId, string name);
         Task CreateAsync(Guid id, string name);
+
+        Task SortCategories(bool decending, bool sortSubcategories, Guid? id, string path);
     }
 }

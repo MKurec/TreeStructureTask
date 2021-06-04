@@ -43,6 +43,7 @@ namespace TreeStructure.Api
             services.AddScoped<DbContext, AplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ISortMainCategoriesRepository, SortMainCategoriesRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddMvc(options => options.EnableEndpointRouting = false);

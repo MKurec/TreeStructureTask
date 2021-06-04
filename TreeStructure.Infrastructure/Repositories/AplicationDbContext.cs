@@ -15,6 +15,7 @@ namespace TreeStructure.Infrastructure.Repositories
         }
 
         public DbSet<Category> Categories { get; set; }
+  
 
 
 

@@ -8,6 +8,7 @@ namespace TreeStructure.Core.Repositories
     public interface IUnitOfWork : IDisposable
     {
         ICategoryRepository Categories { get; }
+
         int Complete();
     }
 }

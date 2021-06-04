@@ -14,9 +14,11 @@ namespace TreeStructure.Infrastructure.Repositories
         {
             _context = context;
             Categories = new CategoryRepository(_context);
+
         }
 
         public ICategoryRepository Categories { get; private set; }
+
 
 
         public int Complete()

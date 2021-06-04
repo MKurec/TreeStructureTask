@@ -9,9 +9,17 @@ namespace TreeStructure.Core.Domain
     public class Category: Entity
     {
         public string Name { get; protected set; }
-        public ICollection<Category> SubCategories { get; protected set; } = new List<Category>();
+        private ISet<Category> _subCategories = new HashSet<Category>();
         public Category Parent { get; protected set; }
         public Guid? ParentId { get; protected set; }
+        public bool? SortSubCategoriesInDecending{ get; protected set; }
+        public IEnumerable<Category> SubCategories { get 
+            {
+                if (SortSubCategoriesInDecending == true) return _subCategories.OrderByDescending(x => x.Name);
+                else if (SortSubCategoriesInDecending == false) return _subCategories.OrderBy(x => x.Name);
+                else return _subCategories;
+            } 
+        }
 
         public Category(Guid id, string name)
         {
@@ -29,7 +37,7 @@ namespace TreeStructure.Core.Domain
         {
             subCategory.Parent = this;
             subCategory.ParentId = this.Id;
-            SubCategories.Add(@subCategory);
+            _subCategories.Add(@subCategory);
         }
         public void SetName(string name)
         {
@@ -38,6 +46,10 @@ namespace TreeStructure.Core.Domain
                 throw new Exception($"Category with id'{Id}' cannot have empty name");
             }
             Name = name;
+        }
+        public void SortSubCategories(bool decending)
+        {
+            SortSubCategoriesInDecending=decending;
         }
     }
     

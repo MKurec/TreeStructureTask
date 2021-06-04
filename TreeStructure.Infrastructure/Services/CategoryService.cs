@@ -14,11 +14,13 @@ namespace TreeStructure.Infrastructure.Services
     {
         private readonly IMapper _mapper;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ISortMainCategoriesRepository _sortMainCategoriesRepository;
 
-        public CategoryService(IMapper mapper, ICategoryRepository categoryRepository)
+        public CategoryService(IMapper mapper, ICategoryRepository categoryRepository, ISortMainCategoriesRepository sortMainCategoriesRepository)
         {
             _mapper = mapper;
             _categoryRepository=categoryRepository;
+            _sortMainCategoriesRepository = sortMainCategoriesRepository;
         }
         public async Task<CategoryDto> GetAsync(Guid id)
         {
@@ -66,6 +68,41 @@ namespace TreeStructure.Infrastructure.Services
             //}
             Category @category = new (id, name);
             await _categoryRepository.AddAsync(@category);
+        }
+
+        public async Task SortCategories(bool decending, bool sortSubcategories, Guid? id, string path)
+        {
+            if (id != null)
+            {
+                var category = await _categoryRepository.GetAsync((Guid)id);
+                if (sortSubcategories && category.SubCategories.Any())
+                {
+                    foreach(var subCatrgory in category.SubCategories )
+                        await SortCategories(decending, sortSubcategories, subCatrgory.Id,path);
+                }
+                category.SortSubCategories(decending);
+                await _categoryRepository.UpdateAsync(category);
+
+            }
+            else
+            {
+                var sortCatOrder = await _sortMainCategoriesRepository.GetAsync(path);
+                sortCatOrder.DecendingOrder = decending;
+                if (sortSubcategories)
+                {
+                    var category = await _categoryRepository.GetAsync((Guid)id);
+                    if (sortSubcategories && category.SubCategories.Any())
+                    {
+                        foreach (var subCatrgory in category.SubCategories)
+                            await SortCategories(decending, sortSubcategories, subCatrgory.Id, path);
+                    }
+                    category.SortSubCategories(decending);
+                    await _categoryRepository.UpdateAsync(category);
+
+                }
+            }
+
+            
         }
     }
 }

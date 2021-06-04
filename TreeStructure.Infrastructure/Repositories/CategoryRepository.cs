@@ -30,19 +30,14 @@ namespace TreeStructure.Infrastructure.Repositories
 
 		public async Task<Category> GetAsync(Guid id)
 		{
-			return await Task.FromResult(Context.Set<Category>().Include((Category x) => x.SubCategories).SingleOrDefault((Category x) => x.Id == id));
+			return await Task.FromResult(categories.Include( x=> x.SubCategories).SingleOrDefault( x=> x.Id == id));
 		}
 
 		public async Task<IEnumerable<Category>> BrowseTreeStructureAsync()
 		{
-			IEnumerable<Category> flatcategories = categories.Include((Category x) => x.SubCategories).AsEnumerable();
-			IEnumerable<Category> xcategories = from x in categories.Include((Category x) => x.SubCategories).AsEnumerable()
-												where !x.ParentId.HasValue
-												select x;
-			IEnumerable<Category> treeCategories = from x in categories.AsEnumerable()
-												   where !x.ParentId.HasValue
-												   where !x.SubCategories.Any()
-												   select x;
+			IEnumerable<Category> flatcategories = categories.Include(x => x.SubCategories).AsEnumerable();
+			IEnumerable<Category> xcategories = categories.Include(x => x.SubCategories).AsEnumerable().Where(x => !x.ParentId.HasValue);
+			IEnumerable<Category> treeCategories = categories.Include(x => x.SubCategories).AsEnumerable().Where(x => !x.ParentId.HasValue).Where(x => !x.SubCategories.Any());
 			foreach (Category category in xcategories)
 			{
 				if (category.SubCategories.Any())
@@ -79,10 +74,27 @@ namespace TreeStructure.Infrastructure.Repositories
 
 		public async Task DeleteAsync(Category category)
 		{
+			if(category.SubCategories.Any())
+            {
+				foreach (var subcategory in category.SubCategories.ToList()) await RecursiveDeleteAsync(subcategory);
+			}
+			//category.Parent.SubCategories.Remove(category);
 			categories.Remove(category);
 			Context.SaveChanges();
 			await Task.CompletedTask;
 		}
+
+		public async Task RecursiveDeleteAsync(Category scategory)
+		{
+			var category = await GetAsync(scategory.Id);
+			if (category.SubCategories.Any())
+			{
+				foreach (var subcategory in category.SubCategories.ToList()) await RecursiveDeleteAsync(subcategory);
+			}
+			categories.Remove(category);
+			await Task.CompletedTask;
+		}
+
 
 		public async Task UpdateAsync(Category category)
 		{
