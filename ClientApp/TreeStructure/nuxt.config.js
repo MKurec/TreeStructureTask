@@ -20,6 +20,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '@fortawesome/fontawesome-free/css/all.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -39,10 +40,42 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
+    '@nuxtjs/proxy',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    proxy: true
+  },
+
+  proxy: {
+    '/api/': { target: 'https://localhost:44368/',pathRewrite: {'^/api/': ''}, changeOrigin: true, secure:false,strictSSL: false }
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          // required: true,
+          type: 'Bearer'
+        },
+        user: {
+          property: '',
+          //autoFetch: false
+        },
+        endpoints: {
+          login: { url: '/api/Users/login', method: 'post', propertyName: 'token'},
+          logout: false,
+          user: { url: '/api/Users', method: 'get' },
+        },
+        redirect: {
+          logout:'/',
+        }
+      }
+    }
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -65,5 +98,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+  router: {
+    base: '/'
+  },
+  devServer: {
+    proxy: 'https://localhost:44368/',
   }
 }
