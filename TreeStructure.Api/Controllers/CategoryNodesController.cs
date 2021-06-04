@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace TreeStructure.Api.Controllers
 {
     [Route("[controller]")]
-    public class CategoryNodesController : Controller
+    public class CategoryNodesController : DefaultController
     {
         private readonly IWebHostEnvironment _environment;
         private readonly ICategoryService _categoryService;

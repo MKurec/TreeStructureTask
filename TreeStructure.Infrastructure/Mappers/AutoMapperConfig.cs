@@ -14,6 +14,7 @@ namespace TreeStructure.Infrastructure.Mappers
             {
                 cfg.CreateMap<Category, CategoryDto>();
                 cfg.CreateMap<Category, CategoryTreeDto>();
+                cfg.CreateMap<User, AccountDto>();
 
             })
             .CreateMapper();

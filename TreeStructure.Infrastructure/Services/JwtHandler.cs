@@ -12,12 +12,6 @@ namespace TreeStructure.Infrastructure.Services
 {
     public class JwtHandler : IJwtHandler
     {
-        private readonly JwtSettings _jwtSettings;
-
-        public JwtHandler(IOptions<JwtSettings> jwtSettings)
-        {
-            _jwtSettings = jwtSettings.Value;
-        }
 
         public JwtDto CreateToken(Guid userId, string role)
         {
@@ -31,11 +25,11 @@ namespace TreeStructure.Infrastructure.Services
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToTimestamp().ToString()),
             };
 
-            var expires = now.AddMinutes(_jwtSettings.ExpiryMinutes);
-            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+            var expires = now.AddMinutes(15);
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_password!")),
                 SecurityAlgorithms.HmacSha256);
             var jwt = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
+                issuer: "http://localhost:44368",
                 claims: claims,
                 notBefore: now,
                 expires: expires,

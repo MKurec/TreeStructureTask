@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace TreeStructure.Api.Controllers
 {
     [Route("[controller]")]
-    public class CategoriesController : Controller
+    public class CategoriesController : DefaultController
     {
         private readonly ICategoryService _categoryService;
 

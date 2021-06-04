@@ -34,12 +34,7 @@ namespace TreeStructure.Api
         {
             Configuration = configuration;
         }
-        private readonly JwtSettings _jWTSettings;
-        public Startup(IOptions<JwtSettings> jwtSetting,IConfiguration configuration)
-        {
-            Configuration = configuration;
-            _jWTSettings = jwtSetting.Value;
-        }
+
 
         public IConfiguration Configuration { get; }
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -98,7 +93,7 @@ namespace TreeStructure.Api
                         ValidIssuer = ("http://localhost:44368"),
                         ValidateAudience = false,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_password!")),
-                        ClockSkew = TimeSpan.FromMinutes(5),
+                        ClockSkew = TimeSpan.FromMinutes(15),
                         RequireSignedTokens = true
                     };
                 });
