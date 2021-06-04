@@ -6,10 +6,12 @@ using TreeStructure.Infrastructure.Commands;
 using TreeStructure.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TreeStructure.Api.Controllers
 {
     [Route("[controller]")]
+    [Authorize(Policy = "HasAdminRole")]
     public class CategoryNodesController : DefaultController
     {
         private readonly IWebHostEnvironment _environment;

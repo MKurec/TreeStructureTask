@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TreeStructure.Infrastructure.Commands;
 using TreeStructure.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TreeStructure.Api.Controllers
 {
@@ -44,13 +45,15 @@ namespace TreeStructure.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "HasAdminRole")]
         public async Task<IActionResult> Post([FromBody]AddCategory command)
         {
             var Id = Guid.NewGuid();
             await _categoryService.CreateAsync(Id, command.Name);
             return Created($"/category/{Id}", null);
-        }
+        }    
         [HttpPost("{parentCategoryId}")]
+        [Authorize(Policy = "HasAdminRole")]
         public async Task<IActionResult> Post(Guid parentCategoryId, [FromBody] AddCategory command)
         {
             var Id = Guid.NewGuid();
@@ -58,12 +61,14 @@ namespace TreeStructure.Api.Controllers
             return Created($"/category/{Id}", null);
         }
         [HttpPut("{categoryId}")]
+        [Authorize(Policy = "HasAdminRole")]
         public async Task<IActionResult> Put(Guid categoryId, [FromBody] AddCategory command)
         {
             await _categoryService.UpdateAsync(categoryId, command.Name);
             return Created($"/category/{categoryId}", null);
         }
         [HttpDelete("{categoryId}")]
+        [Authorize(Policy = "HasAdminRole")]
         public async Task<IActionResult> Delete(Guid categoryId)
         {
             await _categoryService.DeleteAsync(categoryId);

@@ -43,7 +43,7 @@ namespace TreeStructure.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AplicationDbContext>();
-            services.AddAuthorization();
+            services.AddAuthorization(x => x.AddPolicy("HasAdminRole", p => p.RequireRole("admin")));
             services.AddScoped<DbContext, AplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
