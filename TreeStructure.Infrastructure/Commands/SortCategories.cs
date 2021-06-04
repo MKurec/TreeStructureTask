@@ -8,7 +8,7 @@ namespace TreeStructure.Infrastructure.Commands
 {
     public class SortCategories
     {
-        public bool decending { get; set; }
-        public bool sortSubcategories { get; set; }
+        public bool Decending { get; set; }
+        public bool SortSubcategories { get; set; }
     }
 }

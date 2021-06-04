@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TreeStructure.Infrastructure.Extensions;
 
 namespace TreeStructure.Infrastructure.Repositories
 {
@@ -15,6 +16,7 @@ namespace TreeStructure.Infrastructure.Repositories
         }
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<User> Users { get; set; }
   
 
 
@@ -35,6 +37,7 @@ namespace TreeStructure.Infrastructure.Repositories
                       .IsRequired(false)
                       .OnDelete(DeleteBehavior.Restrict);
             });
+            modelBuilder.Seed(); 
         }
     }
 }

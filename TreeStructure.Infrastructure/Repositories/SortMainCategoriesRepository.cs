@@ -37,11 +37,10 @@ namespace TreeStructure.Infrastructure.Repositories
 
 		public async Task UpdateAsync(string path)
 		{
-			var sortOrder = await GetAsync(path);
 			TextWriter writer = null;
 			try
 			{
-				var contentsToWriteToFile = Newtonsoft.Json.JsonConvert.SerializeObject(sortOrder.DecendingOrder);
+				var contentsToWriteToFile = Newtonsoft.Json.JsonConvert.SerializeObject(SortMainCategories.Instance.DecendingOrder);
 				writer = new StreamWriter(Path.Combine(path + "\\SortingOrderInfo\\" + "sortingorder.json"), false);
 				writer.Write(contentsToWriteToFile);
 			}

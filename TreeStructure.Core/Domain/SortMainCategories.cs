@@ -9,7 +9,7 @@ namespace TreeStructure.Core.Domain
     public sealed class SortMainCategories
     {
         public bool? DecendingOrder { get; set; }
-        private static readonly SortMainCategories instance = new SortMainCategories();
+        private static readonly SortMainCategories instance = new ();
         static SortMainCategories() { }
         public static SortMainCategories Instance
         {

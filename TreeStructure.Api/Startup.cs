@@ -23,6 +23,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Options;
+using TreeStructure.Infrastructure.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace TreeStructure.Api
 {
@@ -32,6 +34,12 @@ namespace TreeStructure.Api
         {
             Configuration = configuration;
         }
+        private readonly JwtSettings _jWTSettings;
+        public Startup(IOptions<JwtSettings> jwtSetting,IConfiguration configuration)
+        {
+            Configuration = configuration;
+            _jWTSettings = jwtSetting.Value;
+        }
 
         public IConfiguration Configuration { get; }
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -40,13 +48,19 @@ namespace TreeStructure.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AplicationDbContext>();
+            services.AddAuthorization();
             services.AddScoped<DbContext, AplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISortMainCategoriesRepository, SortMainCategoriesRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IUserService, UserService>();
+
             services.AddSingleton(AutoMapperConfig.Initialize());
             services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddSingleton<IJwtHandler, JwtHandler>();
+            services.Configure<JwtSettings>(Configuration.GetSection("JWT"));
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -68,13 +82,62 @@ namespace TreeStructure.Api
                                              .AllowCredentials();
                                   });
             });
+            services.AddAuthentication
+                (o =>
+                {
+                    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+
+                        ValidateIssuer = true,
+                        ValidIssuer = ("http://localhost:44368"),
+                        ValidateAudience = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_password!")),
+                        ClockSkew = TimeSpan.FromMinutes(5),
+                        RequireSignedTokens = true
+                    };
+                });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
             //services.AddApplicationInsightsTelemetry();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API V1", Version = "v1" });
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API", Version = "v1" });
+                var security = new Dictionary<string, IEnumerable<string>>
+                 {
+                     { "Bearer", new string[] { } },
+                 };
 
-               
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                 {
+                     {
+                         new OpenApiSecurityScheme
+                         {
+                             Reference = new OpenApiReference
+                             {
+                                 Type = ReferenceType.SecurityScheme,
+                                 Id = "Bearer"
+                             },
+                             Scheme = "oauth2",
+                             Name = "Bearer",
+                             In = ParameterLocation.Header,
+
+                         },
+                         new List<string>()
+                     },
+                 });
             });
         }
 
@@ -106,6 +169,7 @@ namespace TreeStructure.Api
                 c.DocExpansion(DocExpansion.None);
 
             });
+            app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
         }
 

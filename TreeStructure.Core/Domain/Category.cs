@@ -51,6 +51,15 @@ namespace TreeStructure.Core.Domain
         {
             SortSubCategoriesInDecending=decending;
         }
+        public void SetParentNull()
+        {
+            Parent = null;
+            ParentId = null;
+        }
+        public void RemoveFromSubcategories(Category category)
+        {
+            _subCategories.Remove(category);
+        }
     }
     
 }

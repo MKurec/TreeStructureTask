@@ -18,5 +18,6 @@ namespace TreeStructure.Infrastructure.Services
         Task CreateAsync(Guid id, string name);
 
         Task SortCategories(bool decending, bool sortSubcategories, Guid? id, string path);
+        Task MoveCategoryAsync(Guid idCategoryToMove, Guid? newParentId);
     }
 }

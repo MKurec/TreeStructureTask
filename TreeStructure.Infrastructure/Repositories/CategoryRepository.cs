@@ -37,21 +37,23 @@ namespace TreeStructure.Infrastructure.Repositories
 		{
 			IEnumerable<Category> flatcategories = categories.Include(x => x.SubCategories).AsEnumerable();
 			IEnumerable<Category> xcategories = categories.Include(x => x.SubCategories).AsEnumerable().Where(x => !x.ParentId.HasValue);
-			IEnumerable<Category> treeCategories = categories.Include(x => x.SubCategories).AsEnumerable().Where(x => !x.ParentId.HasValue).Where(x => !x.SubCategories.Any());
 			foreach (Category category in xcategories)
 			{
 				if (category.SubCategories.Any())
 				{
-					treeCategories.Append(await GetChildren(category, flatcategories));
+					var x = await GetChildren(category, flatcategories);
 				}
 			}
-			return await Task.FromResult(xcategories);
+			//IEnumerable dosen't contain Obj only reference, I know it's messy but it works. 
+			if (SortMainCategories.Instance.DecendingOrder == true) return await Task.FromResult(xcategories.OrderByDescending(x => x.Name));
+			else if (SortMainCategories.Instance.DecendingOrder == false) return await Task.FromResult(xcategories.OrderBy(x => x.Name));
+			else return await Task.FromResult(xcategories);
 		}
 
 		public async Task<Category> GetChildren(Category parentCategory, IEnumerable<Category> categories)
 		{
 			Category thisCategory = categories.SingleOrDefault((Category x) => x.Id == parentCategory.Id);
-			Category returnCategory = new Category(parentCategory.Id, parentCategory.Name);
+			Category returnCategory = new (parentCategory.Id, parentCategory.Name);
 			if (thisCategory.SubCategories.Any())
 			{
 				foreach (Category category in thisCategory.SubCategories)

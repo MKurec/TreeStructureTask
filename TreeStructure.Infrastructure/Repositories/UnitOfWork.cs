@@ -18,6 +18,7 @@ namespace TreeStructure.Infrastructure.Repositories
         }
 
         public ICategoryRepository Categories { get; private set; }
+        public IUserRepository Users { get; private set; }
 
 
 
