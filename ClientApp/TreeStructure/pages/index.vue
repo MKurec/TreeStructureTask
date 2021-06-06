@@ -2,7 +2,10 @@
 <template>
   <v-row>
     <v-btn block @click="opoenOrClose()"> Open All </v-btn>
-    <v-container v-if="$auth.loggedIn && $auth.user.role == 'admin'" class="d-flex flex-row ma-6">
+    <v-container
+      v-if="$auth.loggedIn && $auth.user.role == 'admin'"
+      class="d-flex flex-row ma-6"
+    >
       <v-switch v-model="decending" label="decending"></v-switch>
       <v-switch
         v-model="sortSubcategories"
@@ -10,6 +13,12 @@
       ></v-switch>
       <v-btn color="primary" @click.stop="SortCategories">
         Sort Categories</v-btn
+      >
+      <v-btn
+        color="primary"
+        @click.stop="addCategory = true"
+      >
+        Add Category</v-btn
       >
       <div v-if="selectNewParent">
         <v-btn
@@ -22,10 +31,11 @@
     </v-container>
     <u v-if="selected != null">
       <AddSubCategory v-model="addSubCat" :Parent="selected" />
+      <AddCategory v-model="addCategory"/>
       <RenameCategory v-model="renameCat" :Category="selected" />
     </u>
-     <Alert v-model="dialog" :errmesage="errorMessage" />
-    
+    <Alert v-model="dialog" :errmesage="errorMessage" />
+
     <ul class="flex flex-col lg:flex-row gap-10">
       <v-col style="min-width: 600px" flex-shrink="1">
         <v-treeview
@@ -126,10 +136,11 @@ export default {
       sortSubcategoriesSub: false,
       decendingSub: false,
       selectNewParent: false,
-      dialog:true,
+      dialog: true,
+      addCategory:false,
       categoryToMoveId: "",
       newParentId: "",
-      errorMessage: ""
+      errorMessage: "",
     };
   },
   async fetch() {
