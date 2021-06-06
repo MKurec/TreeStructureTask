@@ -120,11 +120,14 @@ namespace TreeStructure.Infrastructure.Services
                 if (newParentCategory == null) throw new Exception($"Cannot find category with id: '{newParentId}' ");
                 if (await IsParent(idCategoryToMove, (Guid)newParentId)) 
                     throw new Exception($"Cannot move {categoryToMove.Name} with Id : {categoryToMove.Id} becouse {newParentCategory.Name} with id : {newParentCategory.Id} is it's child");
-                var oldParent = await _categoryRepository.GetAsync((Guid)categoryToMove.ParentId);
-                oldParent.RemoveFromSubcategories(categoryToMove);
+                if (categoryToMove.ParentId != null)
+                {
+                    var oldParent = await _categoryRepository.GetAsync((Guid)categoryToMove.ParentId);
+                    oldParent.RemoveFromSubcategories(categoryToMove);
+                    await _categoryRepository.UpdateAsync(oldParent);
+                }
                 newParentCategory.AddSubCategory(categoryToMove);
                 await _categoryRepository.UpdateAsync(newParentCategory);
-                await _categoryRepository.UpdateAsync(oldParent);
             }
             await _categoryRepository.UpdateAsync(categoryToMove); 
         }

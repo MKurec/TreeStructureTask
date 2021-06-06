@@ -61,7 +61,8 @@ export default {
         let response = await this.$auth.loginWith('local', { data: this.login })
         console.log(response)
       } catch (err) {
-        console.log(err)
+          (this.errorMessage = err.response.data.message),
+            (this.dialog = false);
       }
     }
   },

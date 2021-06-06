@@ -25,6 +25,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <Alert v-model="dialog" :errmesage="errorMessage" />
   </v-row>
 </template>
 
@@ -34,6 +35,8 @@ export default {
     return {
         name: '',
         show1: false,
+        errorMessage: "",
+        dialog:true,
     }
   },
   props: {
@@ -50,7 +53,8 @@ export default {
           name: this.name,
         })
         .catch((error) => {
-          console.log(error);
+          (this.errorMessage = error.response.data.message),
+            (this.dialog = false);
         });
         this.renameCatDialog=false;
       this.$nuxt.refresh();

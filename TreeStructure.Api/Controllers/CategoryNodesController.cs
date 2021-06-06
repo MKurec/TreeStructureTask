@@ -40,9 +40,9 @@ namespace TreeStructure.Api.Controllers
             return StatusCode(200);
         }
         [HttpPut("MoveNode/{categoryId}")]
-        public async Task<IActionResult> Put(Guid categoryId, [FromBody] Guid? id)
+        public async Task<IActionResult> Put(Guid categoryId, [FromBody] MoveCategory command)
         {
-            await _categoryService.MoveCategoryAsync(categoryId, id);
+            await _categoryService.MoveCategoryAsync(categoryId, command.Id);
             return Created($"/category/{categoryId}", null);
         }
 

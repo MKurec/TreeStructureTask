@@ -150,6 +150,7 @@ namespace TreeStructure.Api
             app.UseCookiePolicy();
 
             app.UseCors(MyAllowSpecificOrigins);
+            app.UseErrorHandler();
 
 
             app.UseFileServer();
