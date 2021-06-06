@@ -4,7 +4,7 @@
     <v-btn block @click="opoenOrClose()"> Open All </v-btn>
     <v-container
       v-if="$auth.loggedIn && $auth.user.role == 'admin'"
-      class="d-flex flex-row ma-6"
+      class="d-flex flex-row align-center ma-6 pa-6"
     >
       <v-switch v-model="decending" label="decending"></v-switch>
       <v-switch

@@ -9,7 +9,11 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field label="Name*" v-model="login.name" required></v-text-field>
+                <v-text-field
+                  label="Name*"
+                  v-model="login.name"
+                  required
+                ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -18,26 +22,24 @@
                   :type="show1 ? 'text' : 'password'"
                   name="input-10-1"
                   label="Hasło"
-                  hint="At least 8 characters"
                   counter
                   @click:append="show1 = !show1"
                 ></v-text-field>
               </v-col>
-             </v-row>
+            </v-row>
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">
+          <v-btn color="blue darken-1" text @click.stop="dialog = false">
             Close
           </v-btn>
-          <v-btn color="blue darken-1" text @click="userLogin">
-            Log In
-          </v-btn>
+          <v-btn color="blue darken-1" text @click="userLogin"> Log In </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <Alert v-model="alertdialog" :errmesage="errorMessage" />
   </v-row>
 </template>
 
@@ -46,35 +48,38 @@ export default {
   data() {
     return {
       login: {
-        name: '',
-        password: ''
+        name: "",
+        password: "",
       },
       show1: false,
-    }
+      errorMessage: "",
+      alertdialog: true,
+    };
   },
   props: {
-     value: Boolean
+    value: Boolean,
   },
   methods: {
     async userLogin() {
       try {
-        let response = await this.$auth.loginWith('local', { data: this.login })
-        console.log(response)
+        let response = await this.$auth.loginWith("local", {
+          data: this.login,
+        });
+        console.log(response);
       } catch (err) {
-          (this.errorMessage = err.response.data.message),
-            (this.dialog = false);
+        (this.errorMessage = err.response.data.message), (this.dialog = false);
       }
-    }
+    },
   },
   computed: {
     dialog: {
-      get () {
-        return this.value
+      get() {
+        return this.value;
       },
-      set (value) {
-         this.$emit('input', value)
+      set(value) {
+        this.$emit("input", value);
       },
     },
-  }
-}
+  },
+};
 </script>
