@@ -42,20 +42,20 @@ namespace TreeStructure.Infrastructure.Services
 
         public async Task UpdateAsync(Guid id, string name)
         {
-            var @category = await _categoryRepository.GetAsync(id);
+            var @category = await _categoryRepository.GetOrFailAsync(id);
             @category.SetName(name);
             await _categoryRepository.UpdateAsync(@category);
         }
         public async Task DeleteAsync(Guid id)
         {
-            var @category = await _categoryRepository.GetAsync(id);
+            var @category = await _categoryRepository.GetOrFailAsync(id);
             await _categoryRepository.DeleteAsync(@category);
         }
 
         public async Task AddSubCategory(Guid categoryId,Guid subCategoryId, string name)
         {
             var @category = new Category(subCategoryId, name);
-            var @parentcategory = await _categoryRepository.GetAsync(categoryId);
+            var @parentcategory = await _categoryRepository.GetOrFailAsync(categoryId);
             @parentcategory.AddSubCategory(@category);
             await _categoryRepository.AddAsync(@category);
             await _categoryRepository.UpdateAsync(@parentcategory);
@@ -75,7 +75,7 @@ namespace TreeStructure.Infrastructure.Services
         {
             if (id != null)
             {
-                var category = await _categoryRepository.GetAsync((Guid)id);
+                var category = await _categoryRepository.GetOrFailAsync((Guid)id);
                 if (sortSubcategories && category.SubCategories.Any())
                 {
                     foreach(var subCatrgory in category.SubCategories )
@@ -116,13 +116,13 @@ namespace TreeStructure.Infrastructure.Services
             }
             else
             {
-                var newParentCategory = await _categoryRepository.GetAsync((Guid)newParentId);
+                var newParentCategory = await _categoryRepository.GetOrFailAsync((Guid)newParentId);
                 if (newParentCategory == null) throw new Exception($"Cannot find category with id: '{newParentId}' ");
                 if (await IsParent(idCategoryToMove, (Guid)newParentId)) 
                     throw new Exception($"Cannot move {categoryToMove.Name} with Id : {categoryToMove.Id} becouse {newParentCategory.Name} with id : {newParentCategory.Id} is it's child");
                 if (categoryToMove.ParentId != null)
                 {
-                    var oldParent = await _categoryRepository.GetAsync((Guid)categoryToMove.ParentId);
+                    var oldParent = await _categoryRepository.GetOrFailAsync((Guid)categoryToMove.ParentId);
                     oldParent.RemoveFromSubcategories(categoryToMove);
                     await _categoryRepository.UpdateAsync(oldParent);
                 }
@@ -134,7 +134,7 @@ namespace TreeStructure.Infrastructure.Services
 
         public async Task<bool> IsParent(Guid containId ,Guid id )
         {
-            var category = await _categoryRepository.GetAsync(id);
+            var category = await _categoryRepository.GetOrFailAsync(id);
             if (category.ParentId == null) return false;
             else if (category.ParentId == containId) return true;
             else return await  IsParent(containId, (Guid)category.ParentId);
